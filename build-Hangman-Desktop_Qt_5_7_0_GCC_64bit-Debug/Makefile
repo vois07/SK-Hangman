@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../Hangman -I. -I../../../../Qt5.7.0/5.7/gcc_64/include -I../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets -I../../../../Qt5.7.0/5.7/gcc_64/include/QtGui -I../../../../Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I. -I../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../Hangman -I. -I../../../../Qt5.7.0/5.7/gcc_64/include -I../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets -I../../../../Qt5.7.0/5.7/gcc_64/include/QtGui -I../../../../Qt5.7.0/5.7/gcc_64/include/QtNetwork -I../../../../Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I. -I../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/paulina/Qt5.7.0/5.7/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = Hangman1.0.0
 DISTDIR = /home/paulina/Desktop/Studia/SK/build-Hangman-Desktop_Qt_5_7_0_GCC_64bit-Debug/.tmp/Hangman1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/paulina/Qt5.7.0/5.7/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/paulina/Qt5.7.0/5.7/gcc_64/lib -lQt5Widgets -L/usr/lib64 -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/home/paulina/Qt5.7.0/5.7/gcc_64/lib -lQt5Widgets -L/usr/lib64 -lQt5Gui -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -49,9 +49,13 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../Hangman/main.cpp \
-		../Hangman/widget.cpp moc_widget.cpp
+		../Hangman/widget.cpp \
+		../Hangman/serwer.cpp \
+		../Hangman/klient.cpp moc_widget.cpp
 OBJECTS       = main.o \
 		widget.o \
+		serwer.o \
+		klient.o \
 		moc_widget.o
 DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/common/unix.conf \
@@ -184,6 +188,7 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_post.prf \
+		../Hangman/.qmake.stash \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -201,8 +206,12 @@ DIST          = ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/exceptions.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/lex.prf \
-		../Hangman/Hangman.pro ../Hangman/widget.h ../Hangman/main.cpp \
-		../Hangman/widget.cpp
+		../Hangman/Hangman.pro ../Hangman/widget.h \
+		../Hangman/serwer.h \
+		../Hangman/klient.h ../Hangman/main.cpp \
+		../Hangman/widget.cpp \
+		../Hangman/serwer.cpp \
+		../Hangman/klient.cpp
 QMAKE_TARGET  = Hangman
 DESTDIR       = 
 TARGET        = Hangman
@@ -345,6 +354,7 @@ Makefile: ../Hangman/Hangman.pro ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g+
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -365,6 +375,7 @@ Makefile: ../Hangman/Hangman.pro ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g+
 		../Hangman/Hangman.pro \
 		../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Widgets.prl \
 		../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Gui.prl \
+		../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Network.prl \
 		../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Core.prl
 	$(QMAKE) -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug -o Makefile ../Hangman/Hangman.pro
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf:
@@ -498,6 +509,7 @@ Makefile: ../Hangman/Hangman.pro ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g+
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/qt_config.prf:
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/default_pre.prf:
 ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/features/resolve_config.prf:
@@ -518,6 +530,7 @@ Makefile: ../Hangman/Hangman.pro ../../../../Qt5.7.0/5.7/gcc_64/mkspecs/linux-g+
 ../Hangman/Hangman.pro:
 ../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Widgets.prl:
 ../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Gui.prl:
+../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Network.prl:
 ../../../../Qt5.7.0/5.7/gcc_64/lib/libQt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug CONFIG+=qml_debug -o Makefile ../Hangman/Hangman.pro
@@ -533,8 +546,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../Hangman/widget.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Hangman/main.cpp ../Hangman/widget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Hangman/widget.h ../Hangman/serwer.h ../Hangman/klient.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Hangman/main.cpp ../Hangman/widget.cpp ../Hangman/serwer.cpp ../Hangman/klient.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Hangman/widget.ui $(DISTDIR)/
 
 
@@ -663,7 +676,7 @@ moc_widget.cpp: ../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QWidget \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h \
 		../Hangman/widget.h \
 		../../../../Qt5.7.0/5.7/gcc_64/bin/moc
-	/home/paulina/Qt5.7.0/5.7/gcc_64/bin/moc $(DEFINES) -I/home/paulina/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++ -I/home/paulina/Desktop/Studia/SK/Hangman -I/home/paulina/Qt5.7.0/5.7/gcc_64/include -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtWidgets -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtGui -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../Hangman/widget.h -o moc_widget.cpp
+	/home/paulina/Qt5.7.0/5.7/gcc_64/bin/moc $(DEFINES) -I/home/paulina/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++ -I/home/paulina/Desktop/Studia/SK/Hangman -I/home/paulina/Qt5.7.0/5.7/gcc_64/include -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtWidgets -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtGui -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtNetwork -I/home/paulina/Qt5.7.0/5.7/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../Hangman/widget.h -o moc_widget.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -889,8 +902,46 @@ widget.o: ../Hangman/widget.cpp ../Hangman/widget.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qfiledevice.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qtouchdevice.h \
-		ui_widget.h
+		ui_widget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/QVariant \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QAction \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qaction.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qicon.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QApplication \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qapplication.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qeventloop.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qguiapplication.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qinputmethod.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QButtonGroup \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/QHeaderView \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qheaderview.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qframe.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qitemselectionmodel.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtGui/qvalidator.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtCore/qregularexpression.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qslider.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qstyle.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qtabwidget.h \
+		../../../../Qt5.7.0/5.7/gcc_64/include/QtWidgets/qrubberband.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o widget.o ../Hangman/widget.cpp
+
+serwer.o: ../Hangman/serwer.cpp ../Hangman/serwer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serwer.o ../Hangman/serwer.cpp
+
+klient.o: ../Hangman/klient.cpp ../Hangman/klient.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o klient.o ../Hangman/klient.cpp
 
 moc_widget.o: moc_widget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_widget.o moc_widget.cpp
