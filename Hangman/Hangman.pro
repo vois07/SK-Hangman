@@ -16,12 +16,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        widget.cpp \
-    serwer.cpp \
-    klient.cpp
+        widget.cpp
 
-HEADERS  += widget.h \
-    serwer.h \
-    klient.h
+HEADERS  += widget.h
 
 FORMS    += widget.ui

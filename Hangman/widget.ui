@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>341</width>
-    <height>291</height>
+    <height>304</height>
    </rect>
   </property>
   <property name="palette">
@@ -63,7 +63,7 @@
     <string>A</string>
    </property>
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_2">
@@ -476,7 +476,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>210</y>
+     <y>220</y>
      <width>321</width>
      <height>70</height>
     </rect>
@@ -1108,6 +1108,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_27">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>260</x>
@@ -1117,9 +1120,40 @@
     </rect>
    </property>
    <property name="text">
-    <string>Reset</string>
+    <string>New 
+game</string>
    </property>
   </widget>
+  <zorder>pushButton_27</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>pushButton_2</zorder>
+  <zorder>pushButton_3</zorder>
+  <zorder>pushButton_4</zorder>
+  <zorder>pushButton_5</zorder>
+  <zorder>pushButton_6</zorder>
+  <zorder>pushButton_7</zorder>
+  <zorder>pushButton_8</zorder>
+  <zorder>pushButton_9</zorder>
+  <zorder>pushButton_10</zorder>
+  <zorder>pushButton_11</zorder>
+  <zorder>pushButton_12</zorder>
+  <zorder>pushButton_13</zorder>
+  <zorder>pushButton_14</zorder>
+  <zorder>pushButton_15</zorder>
+  <zorder>pushButton_16</zorder>
+  <zorder>pushButton_17</zorder>
+  <zorder>pushButton_18</zorder>
+  <zorder>pushButton_19</zorder>
+  <zorder>pushButton_20</zorder>
+  <zorder>pushButton_21</zorder>
+  <zorder>pushButton_22</zorder>
+  <zorder>pushButton_23</zorder>
+  <zorder>pushButton_24</zorder>
+  <zorder>pushButton_25</zorder>
+  <zorder>pushButton_26</zorder>
+  <zorder>plainTextEdit</zorder>
+  <zorder>lcdNumber</zorder>
+  <zorder>label</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

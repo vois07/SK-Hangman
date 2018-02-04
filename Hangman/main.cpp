@@ -4,7 +4,6 @@
 #include<QtWidgets>
 #include<QtNetwork>
 #include <QPlainTextEdit>
-#include "serwer.h"
 
 int main(int argc, char *argv[])
 {

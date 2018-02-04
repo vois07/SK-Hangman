@@ -60,7 +60,7 @@ public:
     {
         if (Widget->objectName().isEmpty())
             Widget->setObjectName(QStringLiteral("Widget"));
-        Widget->resize(341, 291);
+        Widget->resize(341, 304);
         QPalette palette;
         QBrush brush(QColor(232, 228, 225, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -71,7 +71,7 @@ public:
         pushButton = new QPushButton(Widget);
         pushButton->setObjectName(QStringLiteral("pushButton"));
         pushButton->setGeometry(QRect(180, 10, 16, 22));
-        pushButton->setCheckable(true);
+        pushButton->setCheckable(false);
         pushButton_2 = new QPushButton(Widget);
         pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
         pushButton_2->setGeometry(QRect(200, 10, 16, 22));
@@ -176,7 +176,7 @@ public:
         plainTextEdit = new QPlainTextEdit(Widget);
         plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
         plainTextEdit->setEnabled(false);
-        plainTextEdit->setGeometry(QRect(10, 210, 321, 70));
+        plainTextEdit->setGeometry(QRect(10, 220, 321, 70));
         QPalette palette1;
         QBrush brush1(QColor(0, 0, 0, 255));
         brush1.setStyle(Qt::SolidPattern);
@@ -280,7 +280,38 @@ public:
         label->setAlignment(Qt::AlignCenter);
         pushButton_27 = new QPushButton(Widget);
         pushButton_27->setObjectName(QStringLiteral("pushButton_27"));
+        pushButton_27->setEnabled(false);
         pushButton_27->setGeometry(QRect(260, 140, 61, 41));
+        pushButton_27->raise();
+        pushButton->raise();
+        pushButton_2->raise();
+        pushButton_3->raise();
+        pushButton_4->raise();
+        pushButton_5->raise();
+        pushButton_6->raise();
+        pushButton_7->raise();
+        pushButton_8->raise();
+        pushButton_9->raise();
+        pushButton_10->raise();
+        pushButton_11->raise();
+        pushButton_12->raise();
+        pushButton_13->raise();
+        pushButton_14->raise();
+        pushButton_15->raise();
+        pushButton_16->raise();
+        pushButton_17->raise();
+        pushButton_18->raise();
+        pushButton_19->raise();
+        pushButton_20->raise();
+        pushButton_21->raise();
+        pushButton_22->raise();
+        pushButton_23->raise();
+        pushButton_24->raise();
+        pushButton_25->raise();
+        pushButton_26->raise();
+        plainTextEdit->raise();
+        lcdNumber->raise();
+        label->raise();
 
         retranslateUi(Widget);
 
@@ -318,7 +349,8 @@ public:
         pushButton_26->setText(QApplication::translate("Widget", "Z", 0));
         plainTextEdit->setPlainText(QApplication::translate("Widget", "Welcome to Hangman", 0));
         label->setText(QString());
-        pushButton_27->setText(QApplication::translate("Widget", "Reset", 0));
+        pushButton_27->setText(QApplication::translate("Widget", "New \n"
+"game", 0));
     } // retranslateUi
 
 };

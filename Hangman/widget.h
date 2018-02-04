@@ -3,8 +3,10 @@
 
 #include <QWidget>
 #include <stdio.h>
-#include "serwer.h"
 #include <QtGui>
+#include <QMainWindow>
+#include<QtWidgets>
+#include<QtNetwork>
 
 namespace Ui {
 class Widget;
@@ -15,14 +17,37 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
+
+    QString host = "192.168.0.108";
+    int port = 1234;
+
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-    void setLine(std::string);
+
+    std::string receivedStr;
+    void setLine();
     void loseLife();
     void showPic();
+    void Reset();
+    bool checkWon();
+    std::string makeLine();
+    std::string howManySteps;
+    char ifOkay;
+    bool tries[30];
+
+
     void disableButtons();
     void enableButtons();
-    void Reset();
+
+    //connective
+    void doConnect();
+    void connSucceeded();
+    void dataAvail();
+    void sendData(char);
+    void someerror(QTcpSocket::SocketError);
+    void disableSome();
+
+    QTcpSocket * sock = 0;
 
 private slots:
     void on_plainTextEdit_destroyed();
@@ -83,8 +108,7 @@ private slots:
 
 private:
     Ui::Widget *ui;
-    Serwer s;
-    std::string picspath = "/home/paulina/Desktop/Studia/SK/Hangman/pics/";
+    std::string picspath = "./pics/";
 };
 
 #endif // WIDGET_H

@@ -7,12 +7,18 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    disableButtons();
     ui -> plainTextEdit -> clear();
-    s.encode();
-    std::string str = s.getLine();
-    setLine(str);
-    showPic();
-    ui -> pushButton_27 -> setEnabled(false);
+    receivedStr = "";
+    howManySteps = "0";
+    //setLine(receivedStr);
+    //showPic();
+
+    for(int i=0;i<30;i++) tries[i]=0;
+
+   // connect(ui->connHost, &QLineEdit::returnPressed, this, &MainWindow::doConnect);
+   // connect(ui->talkInput, &QLineEdit::returnPressed, this, &MainWindow::sendData);
+    doConnect();
 }
 
 Widget::~Widget()
@@ -20,29 +26,127 @@ Widget::~Widget()
     delete ui;
 }
 
+std::string Widget::makeLine()
+{
+    std::string ans = "";
+    int i=0;
+    while (receivedStr[i] != '.')
+    {
+        ans += receivedStr[i];
+        i++;
+    }
+    i++;
+    howManySteps=""; howManySteps +=receivedStr[i];
+    if(howManySteps == "6") {ans += " !!!PRZEGRANA!!!"; disableButtons(); ui -> pushButton_27 -> setEnabled(true);}
+    showPic();
+    i++;
+    ifOkay = receivedStr[i];
+    if (ifOkay=='0') loseLife();
+    if(checkWon()) {ans += " !!!WYGRANA!!!"; disableButtons();  ui -> pushButton_27 -> setEnabled(true); }
+    i++;
+    while(receivedStr[i])
+    {
+        tries[(receivedStr[i]-'A')+1] = 1;
+        i++;
+    }
+    disableSome();
+    return ans;
+}
+
+void Widget::disableSome()
+{
+    int i = 0;
+    for (auto but: QObject::findChildren<QPushButton*>())
+    {
+        if(tries[i]) {but -> setChecked(true); but-> setEnabled(false);}
+        i++;
+        //qDebug() << but->isChecked();
+    }
+}
+
+
 void Widget::Reset()
 {
-    s.Reset();
-    ui -> plainTextEdit -> clear();
-    s.encode();
-    std::string str = s.getLine();
-    setLine(str);
-    showPic();
-    ui -> pushButton_27 -> setEnabled(false);
+    for(int i=0;i<30;i++) tries[i]=0;
+    sendData('1');
     enableButtons();
+    ui -> pushButton_27 -> setEnabled(false);
+
+    ui -> plainTextEdit -> clear();
     ui ->lcdNumber -> display(3);
 }
 
-void Widget::setLine(std::string str)
+bool Widget::checkWon()
 {
-    if (s.checkWon()) {str += " !!!WYGRANA!!!"; disableButtons();}
+    for(int i=0;i<receivedStr.length();i++) if(receivedStr[i] == '-') return false;
+    return true;
+}
+
+void Widget::loseLife()
+{
+    qDebug()<< "losing life ";
+    int val = ui ->lcdNumber -> intValue(); --val;
+    ui ->lcdNumber -> display(val);
+    if (val == 0)
+    {
+        disableButtons();
+    }
+
+}
+
+void Widget::doConnect() {
+    //QMessageBox::information(this, "title", "text");
+
+    sock = new QTcpSocket(this);
+
+    connect(sock, &QTcpSocket::connected, this, &Widget::connSucceeded);
+    connect(sock, &QTcpSocket::readyRead, this, &Widget::dataAvail);
+
+    connect(sock,
+            (void (QTcpSocket::*) (QTcpSocket::SocketError))
+            &QTcpSocket::error, this, &Widget::someerror);
+
+    sock->connectToHost(host, port);
+
+}
+
+void Widget::connSucceeded() {
+    qDebug() << "Connection succesfull!";
+    enableButtons();
+
+}
+
+void Widget::dataAvail() {
+    auto data = sock ->readAll();
+    QTextCodec *codec = QTextCodec::codecForName("KOI8-R");
+    QString qstring = codec->toUnicode(data);
+    receivedStr = qstring.toStdString();
+    setLine();
+    qDebug() << receivedStr.c_str();
+}
+
+void Widget::sendData(char c) {
+    QString str = ""; str +=c;
+    auto data = (str).toUtf8();
+
+    sock->write(data);
+
+}
+
+void Widget::someerror(QTcpSocket::SocketError) {
+    QMessageBox::critical(this, "Error", sock->errorString());
+}
+
+
+void Widget::setLine()
+{
     ui -> plainTextEdit -> clear();
-    ui-> plainTextEdit-> appendPlainText(QString::fromStdString(str));
+    ui-> plainTextEdit-> appendPlainText(QString::fromStdString(makeLine()));
 }
 
 void Widget::showPic()
 {
-    QString filename = QString::fromStdString(picspath + std::to_string(s.steps2die++) + ".png");
+    QString filename = QString::fromStdString(picspath + howManySteps + ".png");
     QImage image(filename);
     ui-> label->setPixmap(QPixmap::fromImage(image));
 }
@@ -53,7 +157,6 @@ void Widget::disableButtons()
     {
         but -> setEnabled(false);
     }
-    ui -> pushButton_27 -> setEnabled(true);
 }
 
 void Widget::enableButtons()
@@ -62,204 +165,145 @@ void Widget::enableButtons()
     {
         but -> setEnabled(true);
         but ->setChecked(false);
+        but -> setCheckable(true);
     }
-}
-
-void Widget::loseLife()
-{
-    int val = ui ->lcdNumber -> intValue(); --val;
-    ui ->lcdNumber -> display(val);
-    if (val == 0)
-    {
-        disableButtons();
-    }
-    showPic();
-
+    ui -> pushButton_27 -> setEnabled(false);
 }
 
 
-void Widget::on_pushButton_clicked()
-{
-    if (!(s.decode('A'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
-}
-void Widget::on_pushButton_2_clicked()
-{
-    if (!(s.decode('B'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
-}
+
 void Widget::on_plainTextEdit_destroyed()
 {
 }
 
+void Widget::on_pushButton_clicked()
+{
+    sendData('A');
+}
+
+void Widget::on_pushButton_2_clicked()
+{
+    sendData('B');
+}
+
 void Widget::on_pushButton_3_clicked()
 {
-    if (!(s.decode('C'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('C');
 }
 
 void Widget::on_pushButton_4_clicked()
 {
-    if (!(s.decode('D'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('D');
 }
 
 void Widget::on_pushButton_5_clicked()
 {
-    if (!(s.decode('E'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('E');
 }
 
 void Widget::on_pushButton_6_clicked()
 {
-    if (!(s.decode('F'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('F');
 }
 
 void Widget::on_pushButton_7_clicked()
 {
-    if (!(s.decode('G'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('G');
 }
 
 void Widget::on_pushButton_8_clicked()
 {
-    if (!(s.decode('H'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('H');
 }
 
 void Widget::on_pushButton_9_clicked()
 {
-    if (!(s.decode('I'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('I');
 }
 
 void Widget::on_pushButton_10_clicked()
 {
-    if (!(s.decode('J'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('J');
 }
 
 void Widget::on_pushButton_11_clicked()
 {
-    if (!(s.decode('K'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('K');
 }
 
 void Widget::on_pushButton_12_clicked()
 {
-    if (!(s.decode('L'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('L');
 }
 
 void Widget::on_pushButton_13_clicked()
 {
-    if (!(s.decode('M'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('M');
 }
 
 void Widget::on_pushButton_14_clicked()
 {
-    if (!(s.decode('N'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('N');
 }
 
 void Widget::on_pushButton_15_clicked()
 {
-    if (!(s.decode('O'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('O');
 }
 
 void Widget::on_pushButton_16_clicked()
 {
-    if (!(s.decode('P'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('P');
 }
 
 void Widget::on_pushButton_17_clicked()
 {
-    if (!(s.decode('Q'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('Q');
 }
 
 void Widget::on_pushButton_18_clicked()
 {
-    if (!(s.decode('R'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('R');
 }
 
 void Widget::on_pushButton_19_clicked()
 {
-    if (!(s.decode('S'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('S');
 }
 
 void Widget::on_pushButton_20_clicked()
 {
-    if (!(s.decode('T'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('T');
 }
 
 void Widget::on_pushButton_21_clicked()
 {
-    if (!(s.decode('U'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('U');
 }
 
 void Widget::on_pushButton_22_clicked()
 {
-    if (!(s.decode('V'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('V');
 }
 
 void Widget::on_pushButton_23_clicked()
 {
-    if (!(s.decode('W'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('W');
 }
 
 void Widget::on_pushButton_24_clicked()
 {
-    if (!(s.decode('X'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('X');
 }
 
 void Widget::on_pushButton_25_clicked()
 {
-    if (!(s.decode('Y'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('Y');
 }
 
 void Widget::on_pushButton_26_clicked()
 {
-    if (!(s.decode('Z'))) loseLife();
-    std::string str = s.getLine();
-    setLine(str);
+    sendData('Z');
 }
 
 void Widget::on_pushButton_27_clicked()
