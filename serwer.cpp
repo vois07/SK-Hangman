@@ -102,8 +102,8 @@ bool decode(char c)
 int main(int argc , char *argv[])
 {
 
-    int servSck , cliSck , c;
-    struct sockaddr_in server , client;
+    int servSck , cliSck ;
+    struct sockaddr_in server;
     int MAXi = 150;
 
     //create socket
