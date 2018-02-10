@@ -44,7 +44,7 @@ std::string Widget::makeLine()
     if (ifOkay=='0') loseLife();
     if(checkWon()) {ans += " !!!WYGRANA!!!"; disableButtons();  ui -> pushButton_27 -> setEnabled(true); }
     i++;
-    while(receivedStr[i])
+    while(receivedStr[i] != ';' )
     {
         tries[(receivedStr[i]-'A')+1] = 1;
         i++;
@@ -146,6 +146,7 @@ void Widget::setLine()
 
 void Widget::showPic()
 {
+    qDebug() <<"showpic";
     QString filename = QString::fromStdString(picspath + howManySteps + ".png");
     QImage image(filename);
     ui-> label->setPixmap(QPixmap::fromImage(image));

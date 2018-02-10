@@ -18,7 +18,7 @@ class Widget : public QWidget
 
 public:
 
-    QString host = "192.168.0.108";
+    QString host = "192.168.0.54";
     int port = 1234;
 
     explicit Widget(QWidget *parent = 0);
