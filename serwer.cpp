@@ -8,21 +8,44 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <sys/shm.h>
+#include <string.h>
+
+#define CHAR_ARRAY_LENGTH 50
 
 int port = 1234;
+int max_graczy = 16;
 
 using namespace std;
 
-string haslo;
-string encoded;
 vector<string> lines;
 string passpath = "./Hangman/passwords";
-char steps2die = '0';
 
+typedef struct 
+{
+char haslo[CHAR_ARRAY_LENGTH];
+char encoded[CHAR_ARRAY_LENGTH];
+char tries[CHAR_ARRAY_LENGTH]; int try_it;
+char steps2die;
+}gameInfo;
+
+gameInfo *gI;
+int haslo_length;
+
+
+void encode(string pom)
+{
+    for (int i =0; i< haslo_length; i++) //encoding
+    {
+        gI -> haslo[i] = pom[i];
+        if (gI -> haslo[i] == ' ') gI -> encoded[i]= ' ';
+        else if (gI -> haslo[i]<= 'Z' && gI -> haslo[i]>='A') gI -> encoded[i]= '-';
+    }
+}
 
 void makePassword()
 {
-    encoded = "";
+    //gI -> encoded = "";
 
     ifstream infile;
     infile.open(passpath.c_str());
@@ -33,14 +56,11 @@ void makePassword()
     infile.close();
 
     srand(time(NULL));
-    haslo = lines[rand()%lines.size()]; //choosing random password
+    string pom = lines[rand()%lines.size()]; //choosing random password
+    haslo_length = pom.length();
 
-    cout<< "encoding a password\n";
-    for (int i =0; i< haslo.length(); i++) //encoding
-    {
-        if (haslo[i] == ' ') encoded += ' ';
-        else if (haslo[i]<= 'Z' && haslo[i]>='A') encoded += '-';
-    }
+    encode(pom);
+
 
     
 }
@@ -48,27 +68,34 @@ void makePassword()
 
 void Reset()
 {
-    haslo = lines[rand()%lines.size()];
-    encoded ="";
-    steps2die = '0';
+    string pom = lines[rand()%lines.size()];
+    haslo_length = pom.length();
+    encode(pom);
+    gI -> steps2die = '0';
 }
 
 bool checkWon(string decoded)
 {
-    if (haslo == decoded) return true;
-    return false;
+    for (int i=0; i< haslo_length; i++)
+    {
+        if (gI -> haslo[i] != decoded[i]) return false;
+    }
+    return true;
 }
 
 bool decode(char c)
 {
-    string str = "";
+    char str[CHAR_ARRAY_LENGTH];
     bool ans = false;
-    for (int i = 0; i < haslo.length(); i++)
+    for (int i = 0; i <  haslo_length; i++)
     {
-        if (haslo[i] == c) {str += haslo[i]; ans = true;}
-        else str += encoded[i];
+        if (gI -> haslo[i] == c) {str[i] = gI -> haslo[i]; ans = true;}
+        else str[i] = gI -> encoded[i];
     }
-    encoded = str;
+    for (int i = 0; i <  haslo_length; i++) gI -> encoded[i] = str[i];
+
+    cout<< "encoded " << gI -> encoded <<endl;
+    
     return ans;
 }
  
@@ -103,39 +130,58 @@ int main(int argc , char *argv[])
 
     listen(servSck, 10);
 
-
+   int pamiec_graczy;
+   pamiec_graczy = shmget(IPC_PRIVATE, sizeof(gameInfo)*max_graczy, IPC_CREAT | 0600);//Pamiec wspoldzielona dla serwera
+   if(pamiec_graczy==-1)
+       {printf("Blad przy tworzeniu pamieci dla serwera");}
+   gI = (gameInfo*)shmat(pamiec_graczy,NULL,0);
    makePassword();
-   cout<<haslo<<"\n"<<encoded<<"\n";
+   cout<< gI -> haslo;
 
-   string steps = ""; steps += steps2die;
-   string sendingData = encoded + "." + steps + "1";
 
-   const char *buf= sendingData.c_str();
-   string tries = "";
+   
+
+   char sendingData[CHAR_ARRAY_LENGTH*2];
+   for(int i=0; i<haslo_length; i++) sendingData[i] = gI -> encoded[i];
+   sendingData[haslo_length] = '.';
+   sendingData[haslo_length+1] = gI -> steps2die;
+   sendingData[haslo_length+2] = '1';
+   sendingData[haslo_length+3] = ';';
+
+   char buf[CHAR_ARRAY_LENGTH*2]; for(int i=0;i<CHAR_ARRAY_LENGTH*2;i++)buf[i]= sendingData[i];
    char rcvBuf[1] = {'0'};
    int n;
+   gI -> steps2die = '0';
+   gI -> try_it = 0;
 
    while(1)
    {
         cliSck = accept(servSck, 0, 0);
         if (fork())
 	{
+	    gI =  (gameInfo*)shmat(pamiec_graczy,NULL,0);
+            cout<< "sending1 " << buf <<endl;
             write(cliSck, buf, MAXi);
 	    while(1)
             {
 
                 if((n = read(cliSck, rcvBuf, 1)) > 0 )
                 {
-		    string aTry = "1";
-                    cout<<n<< " "<<rcvBuf <<endl; 
+		    char aTry = '1';
                     char rcvd = rcvBuf[0];
+                    puts("\nnew letter: "); cout<<(rcvd)<<endl; puts("\n");
                     if (rcvd >= 'A' && rcvd <= 'Z')
                     {
-                        if (!decode(rcvd)) {steps2die ++; aTry="0";} 
-                        tries+=rcvd;
-			sendingData = encoded;
-                        string steps = ""; steps += steps2die;
-			sendingData += ('.'+steps+aTry+tries+';');
+                        if (!decode(rcvd)) {gI -> steps2die ++; aTry='0';} 
+                        gI -> tries[gI -> try_it] =rcvd; 
+                        gI -> try_it += 1;
+                        for (int i=0;i<haslo_length;i++ ) sendingData[i] = gI -> encoded[i];
+                        sendingData[haslo_length] = '.';
+                        sendingData[haslo_length+1] = gI -> steps2die;
+                        sendingData[haslo_length+2] = aTry;
+                        for (int i= 0; i<= gI->try_it; i++) sendingData[i+haslo_length+3] = gI -> tries[i];
+                        sendingData[haslo_length + gI->try_it + 3] = ';';
+                        cout << "with ; " << sendingData<<endl;
                     }
                     else if (rcvd >= '0' && rcvd <= '9')
 		    {
@@ -147,26 +193,34 @@ int main(int argc , char *argv[])
 			    case 1: {
 				cout<<"switch\n";
 				makePassword();
-   				cout<<haslo<<"\n"<<encoded<<"\n";
+   				cout<<gI -> haslo<<"\n"<<gI -> encoded<<"\n";
 
-				steps2die = '0';
-   				steps = ""; steps += steps2die;
-   				sendingData = encoded + "." + steps + "1";
+				gI -> steps2die = '0';
+                    		for (int i=0;i<haslo_length;i++ ) sendingData[i] = gI -> encoded[i];
+                        	sendingData[haslo_length] = '.';
+                        	sendingData[haslo_length+1] = gI -> steps2die;
+                        	sendingData[haslo_length+2] = '1';
+				sendingData[haslo_length+3] = ';';
+				memset(&(gI -> tries)[0], 0, sizeof(gI -> tries));
+				//for(int i=0;i<gI->try_it;i++) gI->tries[i] = '\0';
+				gI -> try_it = 0;
 
-   				buf= sendingData.c_str();
-   				tries = "";
+   				//for(int i=0;i<haslo_length+3;i++) buf[i]= sendingData[i];
+				for(int i=0;i<CHAR_ARRAY_LENGTH*2;i++)buf[i]= sendingData[i];
+                                cout<< "sending2 " << buf <<endl;
 				write(cliSck, buf, MAXi);
- 				break;} //reset
+ 				break;} 
 
 			}
 
                     }
-		    
-
+		    for(int i=0;i<CHAR_ARRAY_LENGTH*2;i++)buf[i]= sendingData[i];
+		    cout<< "sending3 " << buf <<endl;
+		    write(cliSck, buf, MAXi);
                 }
 		else close(cliSck);
-		write(cliSck, buf, MAXi);
-		if (steps2die == '6') break;
+                
+		if (gI -> steps2die == '6') break;
 
 		
             }
