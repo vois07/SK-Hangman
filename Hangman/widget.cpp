@@ -8,17 +8,14 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
     disableButtons();
+    ui ->pushButton_28 ->setEnabled(true);
     ui -> plainTextEdit -> clear();
     receivedStr = "";
     howManySteps = "0";
     //setLine(receivedStr);
-    //showPic();
+    showPic();
 
     for(int i=0;i<30;i++) tries[i]=0;
-
-   // connect(ui->connHost, &QLineEdit::returnPressed, this, &MainWindow::doConnect);
-   // connect(ui->talkInput, &QLineEdit::returnPressed, this, &MainWindow::sendData);
-    doConnect();
 }
 
 Widget::~Widget()
@@ -58,6 +55,7 @@ void Widget::disableSome()
     int i = 0;
     for (auto but: QObject::findChildren<QPushButton*>())
     {
+
         if(tries[i]) {but -> setChecked(true); but-> setEnabled(false);}
         i++;
         //qDebug() << but->isChecked();
@@ -169,6 +167,7 @@ void Widget::enableButtons()
         but -> setCheckable(true);
     }
     ui -> pushButton_27 -> setEnabled(false);
+    ui -> pushButton_28 -> setEnabled(false);
 }
 
 
@@ -308,6 +307,13 @@ void Widget::on_pushButton_26_clicked()
 }
 
 void Widget::on_pushButton_27_clicked()
-{\
+{
     Reset();
+}
+
+void Widget::on_pushButton_28_clicked()
+{
+    host = ui->lineEdit->text();
+    doConnect();
+    ui -> lineEdit -> setEnabled(false);
 }

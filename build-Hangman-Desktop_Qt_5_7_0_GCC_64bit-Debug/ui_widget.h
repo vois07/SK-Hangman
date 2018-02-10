@@ -16,6 +16,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
@@ -55,6 +56,8 @@ public:
     QLCDNumber *lcdNumber;
     QLabel *label;
     QPushButton *pushButton_27;
+    QLineEdit *lineEdit;
+    QPushButton *pushButton_28;
 
     void setupUi(QWidget *Widget)
     {
@@ -282,6 +285,12 @@ public:
         pushButton_27->setObjectName(QStringLiteral("pushButton_27"));
         pushButton_27->setEnabled(false);
         pushButton_27->setGeometry(QRect(260, 140, 61, 41));
+        lineEdit = new QLineEdit(Widget);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setGeometry(QRect(180, 190, 111, 22));
+        pushButton_28 = new QPushButton(Widget);
+        pushButton_28->setObjectName(QStringLiteral("pushButton_28"));
+        pushButton_28->setGeometry(QRect(300, 190, 31, 22));
         pushButton_27->raise();
         pushButton->raise();
         pushButton_2->raise();
@@ -312,6 +321,8 @@ public:
         plainTextEdit->raise();
         lcdNumber->raise();
         label->raise();
+        lineEdit->raise();
+        pushButton_28->raise();
 
         retranslateUi(Widget);
 
@@ -351,6 +362,8 @@ public:
         label->setText(QString());
         pushButton_27->setText(QApplication::translate("Widget", "New \n"
 "game", 0));
+        lineEdit->setText(QApplication::translate("Widget", "192.168.0.54", 0));
+        pushButton_28->setText(QApplication::translate("Widget", "OK", 0));
     } // retranslateUi
 
 };

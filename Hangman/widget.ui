@@ -1124,6 +1124,32 @@
 game</string>
    </property>
   </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>190</y>
+     <width>111</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>192.168.0.54</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_28">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>190</y>
+     <width>31</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+  </widget>
   <zorder>pushButton_27</zorder>
   <zorder>pushButton</zorder>
   <zorder>pushButton_2</zorder>
@@ -1154,6 +1180,8 @@ game</string>
   <zorder>plainTextEdit</zorder>
   <zorder>lcdNumber</zorder>
   <zorder>label</zorder>
+  <zorder>lineEdit</zorder>
+  <zorder>pushButton_28</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
