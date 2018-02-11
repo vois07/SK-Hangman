@@ -153,10 +153,11 @@ int main(int argc , char *argv[])
    int n;
    gI -> steps2die = '0';
    gI -> try_it = 0;
+   int cli_it =0;
 
    while(1)
    {
-        cliSck = accept(servSck, 0, 0);
+        if (cli_it < max_graczy) {cliSck = accept(servSck, 0, 0);
         if (fork())
 	{
 	    gI =  (gameInfo*)shmat(pamiec_graczy,NULL,0);
@@ -224,7 +225,9 @@ int main(int argc , char *argv[])
 
 		
             }
+	    
 	
+	}else {cli_it ++;}
 	}
         
    }
